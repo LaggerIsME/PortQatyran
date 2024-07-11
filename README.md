@@ -1,6 +1,6 @@
 <div align="center">
 
-![PortQatyran Blue](https://github.com/LaggerIsME/PortQatyran/assets/98150971/01d4aa9c-2c3c-4195-9f54-3909e89967d5)
+![PortQatyran Blue](https://github.com/LaggerIsME/PortQatyran/assets/98150971/309363a2-8db6-41fe-885d-32ccf0dc4380)
 
 **Automated network scanner for hunting IPs and port changes**
 
