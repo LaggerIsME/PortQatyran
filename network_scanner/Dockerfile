@@ -8,6 +8,7 @@ WORKDIR /app
 # Copy files from host to container
 COPY ./auto.cronjob /app/auto.cronjob
 COPY ./hosts.txt /app/hosts.txt
+COPY ./.rustscan.toml /app/.rustscan.toml
 
 # Install tools:
 # Curl for HTTP requests
