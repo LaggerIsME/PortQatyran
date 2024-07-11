@@ -1,1 +1,1 @@
-*/2 * * * * rustscan -a '/app/hosts.txt' > /app/output.txt 2> /var/log/cron.log
+*/2 * * * * rustscan -a '/app/hosts.txt' > /var/log/cron.log 2> /var/log/cron.err

@@ -32,4 +32,4 @@ RUN curl -O -k -L "https://github.com/RustScan/RustScan/releases/download/2.3.0/
 RUN dpkg -i rustscan_2.3.0_amd64.deb
 
 # Run cron in background and does not allow container to stop
-CMD (cron -f &) && tail -f /var/log/cron.log
+CMD cron && tail -f /var/log/cron.log /var/log/cron.err
