@@ -19,8 +19,6 @@
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam diam erat, ultrices eget ultrices quis, cursus vitae metus. In feugiat sem turpis, eget auctor eros ultricies vitae. Cras hendrerit posuere felis a lobortis. Duis at ipsum eget eros vulputate lacinia pulvinar sit amet sapien. In lacinia sem quam, at rutrum neque consequat eget. Sed blandit mauris eget sollicitudin tristique. Suspendisse non sapien ac dui convallis vulputate quis nec elit. Maecenas viverra aliquet quam, a pretium lectus posuere non. Integer semper in lectus at fermentum. Vestibulum vehicula turpis massa, eget accumsan leo eleifend eget.
 
 Integer in euismod sem. Nunc tincidunt sapien at massa porttitor, nec fringilla nulla tincidunt. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas dapibus hendrerit auctor. In condimentum euismod sodales. Suspendisse dapibus arcu velit, ut malesuada sapien pharetra a. Cras tempus imperdiet felis non convallis. Morbi sollicitudin tellus ac enim facilisis, a efficitur nulla lobortis. Curabitur accumsan eros sem, eget fringilla nisi ultricies nec. Sed in commodo ex, vitae rhoncus erat. Donec mattis elementum odio et blandit. Etiam rutrum neque pellentesque leo posuere vehicula. 
-
-![PortQatyran Blue](https://github.com/LaggerIsME/PortQatyran/assets/98150971/01d4aa9c-2c3c-4195-9f54-3909e89967d5)
  
 ## Features
 * Lorem ipsum
