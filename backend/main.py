@@ -22,7 +22,7 @@ async def root():
 
 
 # Logs
-@api_router.get("/logs")
+@api_router.post("/logs")
 async def say_hello():
     return {"message": f"Hello man"}
 
