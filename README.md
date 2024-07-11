@@ -1,7 +1,7 @@
 <div align="center">
 
 # PortQatyran 
-![PortQatyran Logo](https://github.com/LaggerIsME/PortQatyran/assets/98150971/574c32c4-9ddf-484a-9c9e-afc1a8af8c9e)
+![PortQatyran Blue](https://github.com/LaggerIsME/PortQatyran/assets/98150971/01d4aa9c-2c3c-4195-9f54-3909e89967d5)
 
 **Automated network scanner for hunting IPs and port changes**
 
