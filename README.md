@@ -45,4 +45,4 @@ Quisque fringilla ut enim ut placerat. Ut volutpat elit sed ultrices tincidunt. 
 * Lorem ipsum
 
 ## License
-PortQatyran is licensed under the GNU General Public License v3.0
+PortQatyran is licensed under the [GNU General Public License v3.0](https://github.com/LaggerIsME/PortQatyran/blob/master/LICENSE)
