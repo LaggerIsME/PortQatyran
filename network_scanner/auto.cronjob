@@ -1,1 +1,1 @@
-*/2 * * * * rustscan -c '/app/.rustscan.toml' -a '/app/hosts.txt' > /var/log/cron.log 2> /var/log/cron.err
+*/2 * * * * /bin/bash -l -c "/app/scripts/start_rustscan.sh"

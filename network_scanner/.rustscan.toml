@@ -1,4 +1,0 @@
-ports = [80, 443, 8080]
-greppable = true
-accessible = true
-scan_order = "Serial"
