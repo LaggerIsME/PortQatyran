@@ -1,3 +1,4 @@
+#!/bin/bash
 # Add env variables for cron
 env >> /etc/environment
 
@@ -13,3 +14,5 @@ function get_date () {
 
 get_date
 echo "Added env variables" >> $portqatyran_log_file
+
+/bin/bash /app/scripts/ascii_logo.sh
