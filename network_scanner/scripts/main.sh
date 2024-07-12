@@ -22,12 +22,13 @@ function rustscan () {
 
   # If file is empty
   if [ ! -s "$raw_output_file" ]; then
+    # Write in logs "no ports"
     echo "No ports was found" >> $portqatyran_log_file
   else
     cat /app/output.txt >> $portqatyran_log_file
   fi
 
-  printf "Scan completed. \nRaw output written to /app/output.txt \nLogs written to /var/log/portqatyran.log\n" >> $portqatyran_log_file
+  printf "Scan completed. \nRaw output written to %s \nLogs written to %s\n" "$raw_output_file" "$portqatyran_log_file" >> $portqatyran_log_file
 }
 
 
@@ -60,7 +61,7 @@ function parse_rustscan () {
     echo "$ports" | tr ',' '\n' > "$output_file"
   done < "$input_file"
 
-  printf 'Conversion completed. \nOutput written to directory %s\n' "$output_dir" >> $portqatyran_log_file
+  printf 'Conversion completed. \nData written to directory %s\n' "$output_dir" >> $portqatyran_log_file
 }
 
 # Use functions
