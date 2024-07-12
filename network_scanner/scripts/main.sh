@@ -4,14 +4,13 @@
 # Global variables
 raw_output_file="/app/output.txt"
 portqatyran_log_file="/var/log/portqatyran.log"
-portqatyran_error_file="/var/log/portqatyran.err"
 portqatyran_db_path="/app/db/"
 
 
 # Get date start of scan
 function get_date () {
   local date_without_tz=$(date "+%d %B %Y %T %:z")
-  local date_with_tz="${date_without_tz} $TZ"
+  local date_with_tz="[${date_without_tz} $TZ]"
   echo "$date_with_tz" >> $portqatyran_log_file
 }
 
@@ -19,16 +18,16 @@ function get_date () {
 # Start network scan
 function rustscan () {
   # Run rustcan
-  /bin/bash rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" -a "$PREY_IPS" > $raw_output_file 2>> $portqatyran_error_file
+  /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" -a "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
 
   # If file is empty
-  if [ ! -s "/app/output.txt" ]; then
+  if [ ! -s "$raw_output_file" ]; then
     echo "No ports was found" >> $portqatyran_log_file
   else
     cat /app/output.txt >> $portqatyran_log_file
   fi
 
-  printf "Scan completed. \nRaw output written to /app/output.txt \nErrors written to /var/log/portqatyran.err \nLogs written to /var/log/portqatyran.log\n" >> $portqatyran_log_file
+  printf "Scan completed. \nRaw output written to /app/output.txt \nLogs written to /var/log/portqatyran.log\n" >> $portqatyran_log_file
 }
 
 
@@ -40,7 +39,7 @@ function parse_rustscan () {
 
   # Check if the specified input file exists
   if [ ! -f "$input_file" ]; then
-    echo "File $input_file not found!" 2>> $portqatyran_error_file
+    echo "File $input_file not found!" 2>> $portqatyran_log_file
     exit 1
   fi
 
@@ -67,4 +66,11 @@ function parse_rustscan () {
 # Use functions
 get_date
 rustscan
-parse_rustscan
+
+# If file is empty
+if [ ! -s "$raw_output_file" ]; then
+  # Do not run parse_rustscan
+  exit 1
+else
+  parse_rustscan
+fi

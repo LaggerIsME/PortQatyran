@@ -6,7 +6,7 @@ services:
     container_name: rustscan
     environment:
       - TZ=${DEFAULT_TIMEZONE}
-    command: bash -c "/app/scripts/startup.sh && cron && tail -f /var/log/portqatyran.log /var/log/portqatyran.err"
+    command: bash -c "/app/scripts/startup.sh && cron && tail -f /var/log/portqatyran.log"
     env_file:
       - .env
     restart: on-failure

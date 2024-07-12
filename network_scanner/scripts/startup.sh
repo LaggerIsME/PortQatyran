@@ -1,6 +1,15 @@
 # Add env variables for cron
 env >> /etc/environment
 
-/bin/bash /app/scripts/get_date.sh
+# Global variables
+portqatyran_log_file="/var/log/portqatyran.log"
 
-echo "Added env variables" >> /var/log/portqatyran.log
+# Get date start of scan
+function get_date () {
+  local date_without_tz=$(date "+%d %B %Y %T %:z")
+  local date_with_tz="[${date_without_tz} $TZ]"
+  echo "$date_with_tz" >> $portqatyran_log_file
+}
+
+get_date
+echo "Added env variables" >> $portqatyran_log_file

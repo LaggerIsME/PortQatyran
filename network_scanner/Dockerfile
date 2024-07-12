@@ -28,15 +28,11 @@ RUN chmod 0644 /app/auto.cronjob && crontab /app/auto.cronjob
 # Create file for portqatyran logs
 RUN touch /app/output.txt
 RUN touch /var/log/portqatyran.log
-RUN touch /var/log/portqatyran.err
 
 # Download rustscan.deb from official repository
 RUN curl -O -k -L "https://github.com/RustScan/RustScan/releases/download/2.3.0/rustscan_2.3.0_amd64.deb"
 
 # Install rustscan
 RUN dpkg -i rustscan_2.3.0_amd64.deb
-# Configure logs output
-RUN ln -sf /dev/stdout /var/log/cron.log
-
 # Run cron in background and does not allow container to stop
 #CMD cron && tail -f /app/output.txt /var/log/cron.err
