@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start rustscan
-/bin/bash ./start_rustscan.sh
+/bin/bash /app/scripts/start_rustscan.sh
 
 # Parse output to json
-/bin/bash ./parse_rustscan_txt_to_json.sh
+/bin/bash /app/scripts/parse_rustscan_txt_to_json.sh /app/output.txt /app/output.json
