@@ -1,26 +1,26 @@
 version: "3.9"
 
 services:
-  fastapi:
-    build: ./backend/
-    container_name: fastapi
-    environment:
-      - TZ=${DEFAULT_TIMEZONE}
-    command: bash -c "uvicorn main:app --host 0.0.0.0 --port ${APP_PORT} --reload"
-    env_file:
-      - .env
-    ports:
-      - 127.0.0.1:${APP_PORT}:${APP_PORT}
-    expose:
-      - ${APP_PORT}
-    restart: on-failure
+#  fastapi:
+#    build: ./backend/
+#    container_name: fastapi
+#    environment:
+#      - TZ=${DEFAULT_TIMEZONE}
+#    command: bash -c "uvicorn main:app --host 0.0.0.0 --port ${APP_PORT} --reload"
+#    env_file:
+#      - .env
+#    ports:
+#      - 127.0.0.1:${APP_PORT}:${APP_PORT}
+#    expose:
+#      - ${APP_PORT}
+#    restart: on-failure
 
   network_scanner:
     build: ./network_scanner/
     container_name: rustscan
     environment:
       - TZ=${DEFAULT_TIMEZONE}
-    command: bash -c "/app/scripts/startup.sh && cron && tail -f /app/output.txt /var/log/cron.err"
+    command: bash -c "/app/scripts/startup.sh && cron && tail -f /var/log/cron.log /var/log/cron.err"
     env_file:
       - .env
     restart: on-failure

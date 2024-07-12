@@ -27,6 +27,7 @@ RUN chmod 0644 /app/auto.cronjob && crontab /app/auto.cronjob
 
 # Create file for cron logs
 RUN touch /app/output.txt
+RUN touch /app/output.json
 RUN touch /var/log/cron.err
 
 # Download rustscan.deb from official repository

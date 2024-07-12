@@ -1,1 +1,1 @@
-*/2 * * * * /bin/bash -l -c "/app/scripts/start_rustscan.sh"
+*/2 * * * * /bin/bash -l -c "/app/scripts/main.sh"
