@@ -6,11 +6,14 @@ raw_output_file="/app/output.txt"
 portqatyran_log_file="/var/log/portqatyran.log"
 portqatyran_db_path="/app/db/"
 
-
 # Get date start of scan
 function get_date () {
   local date_without_tz=$(date "+%d %B %Y %T %:z")
   local date_with_tz="[${date_without_tz} $TZ]"
+
+  # For script outside executing
+  echo "$date_with_tz"
+
   echo "$date_with_tz" >> $portqatyran_log_file
 }
 
@@ -43,11 +46,18 @@ function rustscan () {
 
   # If file is empty
   if [ ! -s "$raw_output_file" ]; then
+    # For script outside executing
+    echo "No ports was found"
     # Write in logs "no ports"
     echo "No ports was found" >> $portqatyran_log_file
   else
-    cat /app/output.txt >> $portqatyran_log_file
+    # For script outside executing
+    cat $raw_output_file
+    cat $raw_output_file >> $portqatyran_log_file
   fi
+
+  # For script outside executing
+  printf "Scan completed. \nRaw output written to %s \nLogs written to %s\n" "$raw_output_file" "$portqatyran_log_file"
 
   printf "Scan completed. \nRaw output written to %s \nLogs written to %s\n" "$raw_output_file" "$portqatyran_log_file" >> $portqatyran_log_file
 }
@@ -61,6 +71,9 @@ function parse_rustscan () {
 
   # Check if the specified input file exists
   if [ ! -f "$input_file" ]; then
+    # For script outside executing
+    echo "File $input_file not found!"
+
     echo "File $input_file not found!" 2>> $portqatyran_log_file
     exit 1
   fi
@@ -81,6 +94,9 @@ function parse_rustscan () {
     # Write ports to the file, each on a new lines
     echo "$ports" | tr ',' '\n' > "$output_file"
   done < "$input_file"
+
+  # For script outside executing
+  printf 'Conversion completed. \nData written to directory %s\n' "$output_dir"
 
   printf 'Conversion completed. \nData written to directory %s\n' "$output_dir" >> $portqatyran_log_file
 }
