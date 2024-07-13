@@ -17,8 +17,22 @@ function get_date () {
 
 # Start network scan
 function rustscan () {
-  # Run rustcan
-  /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" -a "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+
+  # If Port Range and Ports is set
+  if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
+    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> $portqatyran_log_file
+    echo "Scan failed" >> $portqatyran_log_file
+    exit 1
+  # If Port Range and Ports is empty
+  elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+  # If Ports is set
+  elif [ -n "$PORTS" ]; then
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+  # Else if Port Range is set
+  else
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+  fi
 
   # If file is empty
   if [ ! -s "$raw_output_file" ]; then
