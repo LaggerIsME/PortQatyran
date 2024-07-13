@@ -1,5 +1,27 @@
 #!/bin/bash
 
+portqatyran_log_file="/var/log/portqatyran.log"
+
+function get_ports() {
+
+  # Global variables
+  ports=""
+
+  # If Port Range and Ports is set
+  if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
+    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> $portqatyran_log_file
+    exit 1
+  fi
+
+  # If Port Range and Ports is empty
+  if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+    ports="0-65535"
+  # If Ports is set
+  else
+    ports="$PORTS$PORT_RANGE"
+  fi
+}
+
 # Print logo
 function print_logo () {
   # Logo colors
@@ -27,8 +49,8 @@ function print_logo () {
   echo -e "${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}${tab}${blue}${bold}Scan mode: ${clear}${white}$SCAN_MODE${black}"
   echo -e "${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}${tab}${blue}${bold}Notifications mode: ${clear}${white}$NOTIFICATION_MODE${black}"
   echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Batch size: ${clear}${white}$BATCH_SIZE${black}"
-  echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒${white}░${blue}▒▒▒▒${white}░${blue}▒▒▒▒▒${white}░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Ports: ${clear}${white}Coming soon...${black}"
-  echo -e "░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░"
+  echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒${white}░${blue}▒▒▒▒${white}░${blue}▒▒▒▒▒${white}░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Scanned ports: ${clear}${white}${ports}${black}"
+  echo -e "░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Excluded ports: ${clear}${white}$EXCLUDE_PORTS${black}"
   echo -e "░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░"
   echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░░"
   echo -e "░░░░░${blue}▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒${black}░░░░░"
@@ -40,4 +62,5 @@ function print_logo () {
 }
 
 # Use function
+get_ports
 print_logo
