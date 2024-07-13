@@ -9,4 +9,4 @@ services:
     command: bash -c "/app/scripts/startup.sh"
     env_file:
       - .env
-    restart: on-failure
+    restart: always

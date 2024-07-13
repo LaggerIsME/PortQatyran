@@ -2,6 +2,7 @@
 
 portqatyran_log_file="/var/log/portqatyran.log"
 
+# Get ports
 function get_ports() {
 
   # Global variables
