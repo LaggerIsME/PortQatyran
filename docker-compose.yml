@@ -3,7 +3,7 @@ version: "3.9"
 services:
   network_scanner:
     build: ./network_scanner/
-    container_name: rustscan
+    container_name: portqatyran
     environment:
       - TZ=${DEFAULT_TIMEZONE}
     command: bash -c "/app/scripts/startup.sh"
