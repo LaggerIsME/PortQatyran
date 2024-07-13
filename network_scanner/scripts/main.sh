@@ -31,7 +31,12 @@ function rustscan () {
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
   # Else if Port Range is set
   else
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+    # If Exclude Ports is set
+    if [ -n "$EXCLUDE_PORTS" ]; then
+      /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --exclude-ports "$EXCLUDE_PORTS" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+    else
+      /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+    fi
   fi
 
   # If file is empty
