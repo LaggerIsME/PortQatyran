@@ -15,4 +15,11 @@ function get_date () {
 get_date
 echo "Added env variables" >> $portqatyran_log_file
 
+# Show ASCII logo
 /bin/bash /app/scripts/ascii_logo.sh
+
+# Add cron
+/usr/sbin/cron
+
+# Set docker in background mode
+/usr/bin/tail -f /var/log/portqatyran.log
