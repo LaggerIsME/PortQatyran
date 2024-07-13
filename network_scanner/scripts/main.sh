@@ -23,20 +23,22 @@ function rustscan () {
     echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> $portqatyran_log_file
     echo "Scan failed" >> $portqatyran_log_file
     exit 1
+  fi
+
   # If Port Range and Ports is empty
-  elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+  if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
   # If Ports is set
   elif [ -n "$PORTS" ]; then
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
   # Else if Port Range is set
   else
+    local port_range="--range $PORT_RANGE"
     # If Exclude Ports is set
-    if [ -n "$EXCLUDE_PORTS" ]; then
-      /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --exclude-ports "$EXCLUDE_PORTS" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
-    else
-      /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --range "$PORT_RANGE" --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
+    if [[ -n "$EXCLUDE_PORTS" ]]; then
+      port_range="$port_range --exclude-ports $EXCLUDE_PORTS"
     fi
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" > $raw_output_file 2>> $portqatyran_log_file
   fi
 
   # If file is empty
