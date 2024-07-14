@@ -13,24 +13,25 @@
 
 
 ## What is this?
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam diam erat, ultrices eget ultrices quis, cursus vitae metus. In feugiat sem turpis, eget auctor eros ultricies vitae. Cras hendrerit posuere felis a lobortis. Duis at ipsum eget eros vulputate lacinia pulvinar sit amet sapien. In lacinia sem quam, at rutrum neque consequat eget. Sed blandit mauris eget sollicitudin tristique. Suspendisse non sapien ac dui convallis vulputate quis nec elit. Maecenas viverra aliquet quam, a pretium lectus posuere non. Integer semper in lectus at fermentum. Vestibulum vehicula turpis massa, eget accumsan leo eleifend eget.
+PortQatyran is an automated network scanner designed to hunt for IP and port changes. Based on the [rustscan scanner](https://github.com/RustScan/RustScan), it efficiently scans networks for open ports, logs executed commands, and sends notifications in chat via Telegram about the scan results. The tool is highly configurable, allowing users to set scanning frequencies and manually initiate scans.
 
-Integer in euismod sem. Nunc tincidunt sapien at massa porttitor, nec fringilla nulla tincidunt. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas dapibus hendrerit auctor. In condimentum euismod sodales. Suspendisse dapibus arcu velit, ut malesuada sapien pharetra a. Cras tempus imperdiet felis non convallis. Morbi sollicitudin tellus ac enim facilisis, a efficitur nulla lobortis. Curabitur accumsan eros sem, eget fringilla nisi ultricies nec. Sed in commodo ex, vitae rhoncus erat. Donec mattis elementum odio et blandit. Etiam rutrum neque pellentesque leo posuere vehicula. 
- 
+## Why "PortQatyran"?
+The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbolizing its efficiency and speed in detecting network changes. The logo represents an RJ-45 connector with a shark face, which is usually used to connect equipment ports.
+
 ## Features
-* Fast scanning networks for open port IP addresses
-* Scheduling the scanning frequency
-* Fully sandboxed application
-* Logging of all executed commands
-* Easy scanning setup via configuration files
-* Showing the configuration of the tool via the `qatyranfetch` command
-* Manually scan via the `portqatyran` command
-* Sending telegram notifications with scan results
-* Two notification modes: aggresive and ~~pacific~~ (in process)
+* **Fast Network Scanning**: Quickly scans networks for open port IP addresses
+* **Scheduling**: Set the scanning frequency using cron jobs
+* **Sandboxed Application**: Runs in a secure, isolated environment
+* **Logging**: Logs all executed commands for auditing.
+* **Easy Setup**: Simple configuration via environment files.
+* **Configuration Display**: Shows tool configuration with the qatyranfetch command.
+* **Manual Scanning**: Initiate scans manually using the portqatyran command.
+* **Telegram Notifications**: Sends scan results via Telegram.
+* **Notification Modes**: Supports aggressive and passive notification modes (passive mode in progress).
 
 ## Tools and libraries
 * Bash
-* [Rustscan](https://github.com/RustScan/RustScan)
+* Rustscan
 * Cron
 * Curl
 * Nmap
