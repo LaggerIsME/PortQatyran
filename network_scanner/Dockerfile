@@ -34,7 +34,9 @@ RUN curl -O -k -L "https://github.com/RustScan/RustScan/releases/download/2.3.0/
 
 # Add aliases
 RUN cat /app/scripts/ascii_logo.sh > /bin/qatyranfetch
+RUN chmod +x /bin/qatyranfetch
 RUN cat /app/scripts/main.sh > /bin/portqatyran
+RUN chmod +x /bin/portqatyran
 # Install rustscan
 RUN dpkg -i rustscan_2.3.0_amd64.deb
 # Run cron in background and does not allow container to stop
