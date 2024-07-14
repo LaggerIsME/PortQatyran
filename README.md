@@ -40,8 +40,54 @@ The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbol
 * Docker Compose
 
 ## Usage
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam diam erat, ultrices eget ultrices quis, cursus vitae metus. In feugiat sem turpis, eget auctor eros ultricies vitae. Cras hendrerit posuere felis a lobortis. Duis at ipsum eget eros vulputate lacinia pulvinar sit amet sapien. In lacinia sem quam, at rutrum neque consequat eget. Sed blandit mauris eget sollicitudin tristique. Suspendisse non sapien ac dui convallis vulputate quis nec elit. Maecenas viverra aliquet quam, a pretium lectus posuere non. Integer semper in lectus at fermentum. Vestibulum vehicula turpis massa, eget accumsan leo eleifend eget.
+* Clone the repository: 
+```bash 
+git clone https://github.com/LaggerIsME/PortQatyran.git
+```
+* Download and install a Docker: https://docs.docker.com/engine/install/
+* Move to the directory: 
+```bash 
+cd PortQatyran
+```
+* Copy the `example.env` to `.env`:
+```bash
+cp example.env .env
+```
+* Configure variables in `.env` file:
+```bash
+# Timezone settings
+DEFAULT_TIMEZONE="Asia/Almaty"
 
+# Rustscan settings
+# Could be "random" or "serial"
+SCAN_MODE="serial"
+# Number of ports to scan at once
+BATCH_SIZE=1000
+# IP Addreses for scan. Write without spaces.
+PREY_IPS="127.0.0.1,192.168.124.200"
+# Set Only Ports or Port Range
+# Ports. Write without spaces
+#PORTS="80,443,5432"
+# Port range
+PORT_RANGE="0-65535"
+# Exlude ports. Write without spaces.
+EXCLUDE_PORTS=""
+
+# PortQatyran settings.
+# Could be "aggresive". In future will be "pacific"
+NOTIFICATION_MODE="aggresive"
+TELEGRAM_BOT_TOKEN=""
+TELEGRAM_CHAT_ID=""
+```
+* Move to the directory: 
+```bash 
+cd network_scanner/
+```
+* Configure schedule in `auto.cronjob` file:
+```bash
+# For example: every 2 minutes run rustscan
+*/2 * * * * /bin/bash -l -c "/app/scripts/main.sh $NOTIFICATION_MODE"
+```
 ## About us
 * Tool creator: LaggerIsME ([@LaggerIsME](https://github.com/LaggerIsME) | [LinkedIn](https://www.linkedin.com/in/pythondelay/))
 * Logo designer: NoyanTM ([@NoyanTM](https://github.com/NoyanTM) | [LinkedIn](https://www.linkedin.com/in/noyantendikov/))
