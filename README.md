@@ -27,7 +27,7 @@ The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbol
 * **Configuration Display**: Shows tool configuration with the qatyranfetch command.
 * **Manual Scanning**: Initiate scans manually using the portqatyran command.
 * **Telegram Notifications**: Sends scan results via Telegram.
-* **Notification Modes**: Supports aggressive and passive notification modes (passive mode in progress).
+* **Notification Modes**: Supports aggresive and passive notification modes (passive mode in progress).
 
 ## Tools and libraries
 * Bash
@@ -39,13 +39,20 @@ The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbol
 * Docker
 * Docker Compose
 
+## Modes
+* **Aggresive**: Sends all ip addresses and ports after each scan
+* **Passive (in progress)**: Sends only ip addresses and ports that have not been found before
+
 ## Usage
 * Clone the repository: 
 ```bash 
 git clone https://github.com/LaggerIsME/PortQatyran.git
 ```
 * Download and install a Docker: https://docs.docker.com/engine/install/
-* Move to the directory: 
+* Create a bot in Telegram and get a `TELEGRAM_BOT_TOKEN` from `@BotFather`
+* Also in chat with `@BotFather` write: `/setprivacy` and set `DISABLE` mode
+* Get `TELEGRAM_CHAT_ID` for notifications by adding `@my_id_bot` in chat
+* Move to the `~/PortQatyran/` directory: 
 ```bash 
 cd PortQatyran
 ```
@@ -79,15 +86,39 @@ NOTIFICATION_MODE="aggresive"
 TELEGRAM_BOT_TOKEN=""
 TELEGRAM_CHAT_ID=""
 ```
-* Move to the directory: 
+* Move to the `~/PortQatyran/network_scanner/` directory: 
 ```bash 
 cd network_scanner/
 ```
 * Configure schedule in `auto.cronjob` file:
 ```bash
-# For example: every 2 minutes run rustscan
+# For example: every 2 minutes run portqatyran
 */2 * * * * /bin/bash -l -c "/app/scripts/main.sh $NOTIFICATION_MODE"
 ```
+* Move to the `~/PortQatyran/` directory: 
+```bash 
+cd ~/PortQatyran
+```
+* Build and Run with Docker Compose:
+```bash
+docker compose up -d --build
+```
+After all these actions, the bot will send a message with the PortQatyran configuration to the chat you specified
+
+## Commands
+* Show PortQatyran configuration:
+```bash
+docker exec portqatyran qatyranfetch
+```
+![qatyranfetch](https://github.com/user-attachments/assets/c4295aec-7b6e-4b9f-9825-0437eef524ef)
+
+* Manually run scanner:
+```bash
+docker exec portqatyran portqatyran
+```
+![portqatyran](https://github.com/user-attachments/assets/6ec6fbc9-608b-45db-a667-dc17f2ae4df2)
+
+
 ## About us
 * Tool creator: LaggerIsME ([@LaggerIsME](https://github.com/LaggerIsME) | [LinkedIn](https://www.linkedin.com/in/pythondelay/))
 * Logo designer: NoyanTM ([@NoyanTM](https://github.com/NoyanTM) | [LinkedIn](https://www.linkedin.com/in/noyantendikov/))
