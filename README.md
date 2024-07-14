@@ -1,5 +1,10 @@
 <div align="center">
-
+  
+[![GitHub Release](https://img.shields.io/github/release/LaggerIsME/PortQatyran?style=flat&include_prereleases)]()
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/LaggerIsME/PortQatyran?style=flat)]()
+[![Issues](https://img.shields.io/github/issues-raw/LaggerIsME/PortQatyran?maxAge=25000)](https://github.com/LaggerIsME/PortQatyran/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/LaggerIsME/PortQatyran?style=flat)]()
 ![PortQatyran Blue](https://github.com/LaggerIsME/PortQatyran/assets/98150971/309363a2-8db6-41fe-885d-32ccf0dc4380)
 
 **Automated network scanner for hunting IPs and port changes**
