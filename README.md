@@ -43,7 +43,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam diam erat, ultrices
 
 ## About us
 * Tool creator: LaggerIsME ([@LaggerIsME](https://github.com/LaggerIsME) | [LinkedIn](https://www.linkedin.com/in/pythondelay/))
-* Logo designer: NoyanTM ([@NoyanTM](https://github.com/NoyanTM) | [LinkedIn]())
+* Logo designer: NoyanTM ([@NoyanTM](https://github.com/NoyanTM) | [LinkedIn](https://www.linkedin.com/in/noyantendikov/))
 
 ## License
 PortQatyran is licensed under the [GNU General Public License v3.0](https://github.com/LaggerIsME/PortQatyran/blob/master/LICENSE)
