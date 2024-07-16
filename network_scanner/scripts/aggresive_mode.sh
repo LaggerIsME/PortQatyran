@@ -64,68 +64,140 @@ function rustscan () {
 }
 
 
-# Parse rustcan output to need format
+# Parse rustscan output to needed format
 function parse_rustscan () {
-  # Variables
-  local input_file=$raw_output_file
-  local output_dir=$portqatyran_db_path
+  local input_file=$raw_output_file   # Assign the input file path
+  local output_dir=$portqatyran_db_path   # Assign the output directory path
 
-  # Check if the specified input file exists
+  # Check if the input file exists
   if [ ! -f "$input_file" ]; then
-
-    # For script outside executing
-    echo "File $input_file not found!"
-
-    echo "File $input_file not found!" 2>> $portqatyran_log_file
-    exit 1
+    echo "File $input_file not found!"   # Print an error message if input file does not exist
+    echo "File $input_file not found!" 2>> "$portqatyran_log_file"   # Log the error to a log file
+    exit 1   # Exit the function with error status
   fi
 
   # Create the output directory if it doesn't exist
   mkdir -p "$output_dir"
 
-  # Read the file line by line
-  while IFS= read -r line
-  do
-    # Extract IP address and ports
+  # Read the input file line by line
+  while IFS= read -r line; do
+    # Extract IP address and ports from each line
     local ip
     ip=$(echo "$line" | awk '{print $1}')
     local ports
     ports=$(echo "$line" | awk -F'-> ' '{print $2}' | tr -d '[]')
 
-    # Create a file named after the IP address in the specified directory
-    output_file="${output_dir}/${ip}"
+    # Convert ports to an array and sort them numerically
+    IFS=',' read -r -a port_array <<< "$ports"
+    sorted_ports=($(echo "${port_array[@]}" | tr ' ' '\n' | sort -n | tr '\n' ' '))
 
+    # Create a string with port ranges in HTML code format
+    local telegram_ports=""
+    local start_port=${sorted_ports[0]}
+    local end_port=${sorted_ports[0]}
+
+    # Отсортировать порты в промежутки для Telegram
+    for ((i = 1; i < ${#sorted_ports[@]}; i++)); do
+      if ((sorted_ports[i] == end_port + 1)); then
+        end_port=${sorted_ports[i]}
+      else
+        if ((start_port == end_port)); then
+          telegram_ports+=" <code>$start_port</code>,"   # Add single port if range is one port
+        else
+          telegram_ports+=" <code>$start_port-$end_port</code>,"   # Add port range if range is more than one port
+        fi
+        start_port=${sorted_ports[i]}
+        end_port=${sorted_ports[i]}
+      fi
+    done
+
+    # Add the last port range or single port
+    if ((start_port == end_port)); then
+      telegram_ports+=" <code>$start_port</code>"
+    else
+      telegram_ports+=" <code>$start_port-$end_port</code>"
+    fi
+
+    # Remove leading space, if any
+    telegram_ports=$(echo "$telegram_ports" | sed 's/^ //')
+
+    # Add to text file
     local data
+
+    # Create a file with IP address as the filename in the specified directory
+    local output_file="${output_dir}${ip}.txt"
     data=$(echo "$ports" | tr ',' '\n')
 
-    # Add spaces between comma
-    local telegram_ports
-    telegram_ports=$(echo "$ports" | sed 's/,/, /g')
-
-    # Write ports to the file, each on a new lines
+    # Write ports to the file, each on a new line
     echo "$data" > "$output_file"
-    send_info_to_telegram "$ip" "$telegram_ports"
+
+    # Send information to Telegram
+    send_info_to_telegram "$ip" "$telegram_ports" "$output_file"
   done < "$input_file"
 
-  # For script outside executing
-  printf 'Conversion completed. \nData written to directory %s\n' "$output_dir"
-
-  printf 'Conversion completed. \nData written to directory %s\n' "$output_dir" >> $portqatyran_log_file
+  # Print completion message and log it
+  printf 'Conversion completed. \nData written to directory %s\n' "$output_dir" >> "$portqatyran_log_file"
 }
 
+# Function to send information to Telegram with message splitting
 function send_info_to_telegram () {
-  local ip=$1
-  local ports=$2
-  local data="<b>IP address: </b>$ip%0A<b>Opened ports: </b>$ports"
-  local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
-  local time="10"
+  local ip=$1   # IP address parameter
+  local ports=$2   # Ports information parameter
+  local input_file=$3
+  local max_length=4096   # Maximum message length for Telegram
 
-  curl -s --max-time $time -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$data" "$url" >> $portqatyran_log_file 2>> $portqatyran_log_file
-  # Delay for Telegram
-  sleep .5
+  # Convert ports string to an array for easier handling
+  IFS=', ' read -r -a port_array <<< "$ports"
+
+  # Initialize the first part of the message with IP address
+  local message="<b>IP address: </b>$ip%0A<b>Opened ports: </b>"
+
+  # Initialize the current length of the message
+  local message_length=${#message}   # Start with the length of message_part1
+
+  # Build the message content
+  for port in "${port_array[@]}"; do
+    local port_formatted="<code>$port</code>,"   # Format the port with <code> tags
+    message+=" $port_formatted"
+    message_length=$(( message_length + ${#port_formatted} ))
+  done
+    message=${message::-1}
+  # Check if the message length exceeds the maximum allowed for Telegram messages
+  if (( message_length > max_length )); then
+    send_file_to_telegram "$ip" "$input_file"
+  else
+    # If message length is within limits, send as a regular message
+    send_message_to_telegram "$message"
+  fi
 }
 
+# Function to send a message to Telegram
+function send_message_to_telegram () {
+  local message="$1"   # Message parameter
+  local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"   # Telegram API URL
+  local time="10"   # Maximum timeout for curl request
 
+  # Send message with IP and ports to telegram
+  curl -s --max-time "$time" -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
+  sleep .5   # Delay for stability
+}
+
+# Function to send a message to Telegram
+function send_file_to_telegram () {
+  local ip="$1"
+  local input_file="$2"   # Message parameter
+  local message="<b>IP address: </b>$ip%0A<b>Opened ports</b>: Too many ports for Telegram message. All ports are in the file below."
+  local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN"   # Telegram API URL
+  local time="10"   # Maximum timeout for curl request
+
+  # Send message with IP to telegram
+  curl -s --max-time "$time" -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url/sendMessage" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
+  # Send file with ports
+  curl -s --max-time "$time" -F document=@"$input_file" "$url/sendDocument?chat_id=$TELEGRAM_CHAT_ID" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
+  sleep .5   # Delay for stability
+}
+
+# "Main"
 # Use functions
 get_date
 rustscan
