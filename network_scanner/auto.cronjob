@@ -1,1 +1,1 @@
-*/2 * * * * /bin/bash -l -c "/app/scripts/main.sh $NOTIFICATION_MODE"
+*/5 * * * * /bin/bash -l -c "/app/scripts/main.sh $NOTIFICATION_MODE"

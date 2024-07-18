@@ -5,6 +5,7 @@
 raw_output_file="/app/output.txt"
 portqatyran_log_file="/var/log/portqatyran.log"
 portqatyran_db_path="/app/db/"
+log="/tmp/portqatyran.log"
 
 # Get date start of scan
 function get_date () {
@@ -89,6 +90,7 @@ function parse_rustscan () {
 
     # Convert ports to an array and sort them numerically
     IFS=',' read -r -a port_array <<< "$ports"
+    local sorted_ports
     sorted_ports=($(echo "${port_array[@]}" | tr ' ' '\n' | sort -n | tr '\n' ' '))
 
     # Create a string with port ranges in HTML code format
@@ -150,7 +152,7 @@ function send_info_to_telegram () {
   IFS=', ' read -r -a port_array <<< "$ports"
 
   # Initialize the first part of the message with IP address
-  local message="<b>IP address: </b>$ip%0A<b>Opened ports: </b>"
+  local message="<b>IP address: </b>$ip%0A<b>Opened ports:</b>"
 
   # Initialize the current length of the message
   local message_length=${#message}   # Start with the length of message_part1
@@ -175,11 +177,16 @@ function send_info_to_telegram () {
 function send_message_to_telegram () {
   local message="$1"   # Message parameter
   local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"   # Telegram API URL
-  local time="10"   # Maximum timeout for curl request
-
-  # Send message with IP and ports to telegram
-  curl -s --max-time "$time" -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
-  sleep .5   # Delay for stability
+  local time="600"   # Maximum timeout for curl request
+  local status_code
+  while [ "$status_code" != 200 ]
+  do
+    # Send message with IP and ports to telegram
+    status_code=$(curl --silent --output $log -L --max-time "$time" --write-out '%{http_code}' -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url")
+    # Output in log file
+    cat $log >> $portqatyran_log_file
+    sleep .5   # Delay for stability
+  done
 }
 
 # Function to send a message to Telegram
@@ -188,13 +195,37 @@ function send_file_to_telegram () {
   local input_file="$2"   # Message parameter
   local message="<b>IP address: </b>$ip%0A<b>Opened ports</b>: Too many ports for Telegram message. All ports are in the file below."
   local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN"   # Telegram API URL
-  local time="10"   # Maximum timeout for curl request
+  local time="600"   # Maximum timeout for curl request
+  local message_status_code
+  local message_status_sent=false
+  local file_status_code
+  local file_status_sent=false
 
-  # Send message with IP to telegram
-  curl -s --max-time "$time" -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url/sendMessage" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
-  # Send file with ports
-  curl -s --max-time "$time" -F document=@"$input_file" "$url/sendDocument?chat_id=$TELEGRAM_CHAT_ID" >> "$portqatyran_log_file" 2>> "$portqatyran_log_file"
-  sleep .5   # Delay for stability
+  while [ "$message_status_sent" != true ] && [ "$file_status_sent" != true ]
+  do
+
+    # Check message sent statys
+    if ! $message_status_sent; then
+      # Send message with IP to telegram
+      message_status_code=$(curl -L --silent --output $log --max-time "$time" --write-out '%{http_code}' -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url/sendMessage")
+      cat $log >> $portqatyran_log_file
+      sleep .5
+      if [ "$message_status_code" = 200 ]; then
+        message_status_sent=true
+      fi
+    fi
+
+    printf "%s" "$file_status_sent"
+    if ! $file_status_sent; then
+      # Send file with ports
+      file_status_code=$(curl -L --silent --output $log --max-time "$time" --write-out '%{http_code}' -F document=@"$input_file" "$url/sendDocument?chat_id=$TELEGRAM_CHAT_ID")
+      cat $log >> $portqatyran_log_file
+      sleep .5   # Delay for stability
+      if [ "$file_status_code" = 200 ]; then
+        file_status_sent=true
+      fi
+    fi
+  done
 }
 
 # "Main"
