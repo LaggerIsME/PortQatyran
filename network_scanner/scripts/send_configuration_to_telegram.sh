@@ -1,6 +1,3 @@
-# Global variables
-portqatyran_log_file="/var/log/portqatyran.log"
-
 # Get ports
 function get_ports() {
 
@@ -9,7 +6,7 @@ function get_ports() {
 
   # If Port Range and Ports is set
   if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
-    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> $portqatyran_log_file
+    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> "$APP_LOG_FILE" 2>&1
     exit 1
   fi
 
@@ -24,11 +21,19 @@ function get_ports() {
 
 # Send PortQatyran configuration to chat
 function send_configuration_to_telegram () {
-  local data="<b>PortQatyran Configuration</b>%0A%0A<b>Timezone: </b>$TZ%0A<b>Scan mode: </b>$SCAN_MODE %0A<b>Notifications mode: </b>$NOTIFICATION_MODE %0A<b>Batch size: </b>$BATCH_SIZE %0A<b>Scanned ports: </b>${ports} %0A<b>Excluded ports: $EXCLUDE_PORTS</b>%0A"
+  local message="<b>PortQatyran Configuration</b>%0A%0A<b>Timezone: </b>$TZ%0A<b>Scan mode: </b>$SCAN_MODE %0A<b>Notifications mode: </b>$NOTIFICATION_MODE %0A<b>Batch size: </b>$BATCH_SIZE %0A<b>Scanned ports: </b>${ports} %0A<b>Excluded ports: $EXCLUDE_PORTS</b>%0A"
   local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
-  local time="10"
+  local time="600"
+  local status_code
 
-  curl -s --max-time $time -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$data" "$url" >> $portqatyran_log_file 2>> $portqatyran_log_file
+  while [ "$status_code" != 200 ]
+  do
+    # Send message with IP and ports to telegram
+    status_code=$(curl --silent --output "$TMP_LOG_FILE" -L --max-time "$time" --write-out '%{http_code}' -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url")
+    # Output in log file
+    cat "$TMP_LOG_FILE" >> "$APP_LOG_FILE" 2>&1
+    sleep .5   # Delay for stability
+  done
 }
 
 # Use functions
