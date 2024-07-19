@@ -1,7 +1,5 @@
 #!/bin/bash
 
-portqatyran_log_file="/var/log/portqatyran.log"
-
 # Get ports
 function get_ports() {
 
@@ -10,7 +8,7 @@ function get_ports() {
 
   # If Port Range and Ports is set
   if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
-    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> $portqatyran_log_file
+    echo "PORTS AND PORT_RANGE COULD NOT BE SET BOTH" >> "$APP_LOG_FILE"  2>&1
     exit 1
   fi
 
