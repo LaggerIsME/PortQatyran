@@ -169,8 +169,6 @@ function send_info_to_telegram () {
     message=${message::-1}
   fi
 
-  log_message "$message"
-
   # Check if the message length exceeds the maximum allowed for Telegram messages
   if (( message_length > max_length )); then
     send_file_to_telegram "$ip" "$input_file"
