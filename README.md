@@ -32,7 +32,7 @@ The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbol
 * **Configuration Display**: Shows tool configuration with the qatyranfetch command.
 * **Manual Scanning**: Initiate scans manually using the portqatyran command.
 * **Telegram Notifications**: Sends scan results via Telegram.
-* **Notification Modes**: Supports aggresive and passive notification modes (passive mode in progress).
+* **Notification Modes**: Supports aggresive and passive notification modes.
 
 ## Tools and libraries
 * Bash
@@ -46,7 +46,7 @@ The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbol
 
 ## Modes
 * **Aggresive**: Sends all ip addresses and ports after each scan
-* **Passive (in progress)**: Sends only ip addresses and ports that have not been found before
+* **Passive**: Sends only ip addresses and ports that have not been found before
 
 ## Usage
 * Clone the repository: 
@@ -86,10 +86,17 @@ PORT_RANGE="0-65535"
 EXCLUDE_PORTS=""
 
 # PortQatyran settings.
-# Could be "aggresive". In future will be "pacific"
-NOTIFICATION_MODE="aggresive"
+# Could be "aggresive". In future will be "passive"
+NOTIFICATION_MODE="passive"
 TELEGRAM_BOT_TOKEN=""
 TELEGRAM_CHAT_ID=""
+
+# Directory path
+RAW_OUTPUT_FILE="/tmp/output.txt"
+APP_LOG_FILE="/var/log/portqatyran.log"
+APP_DB_PATH="/app/db/"
+TMP_LOG_FILE="/tmp/portqatyran.log"
+TMP_DB_PATH="/tmp/db/"
 ```
 * Move to the `~/PortQatyran/network_scanner/` directory: 
 ```bash 

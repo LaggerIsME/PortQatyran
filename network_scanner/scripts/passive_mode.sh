@@ -5,6 +5,9 @@ function log_message () {
   printf "\n$(date '+%d %B %Y %T %:z') [%s] - $message" "${TZ}" >> "$APP_LOG_FILE" 2>&1
 }
 
+
+
+
 # Start network scan
 function rustscan () {
 
@@ -35,20 +38,20 @@ function rustscan () {
 
   # If file is empty
   if [ ! -s "$RAW_OUTPUT_FILE" ]; then
+    # For script outside executing
     log_message "No ports was found"
   fi
 
-  # For script outside executing
   log_message "Scan completed. \nRaw output written to $RAW_OUTPUT_FILE \nLogs written to $APP_LOG_FILE"
 }
-
 
 # Parse rustscan output to needed format
 function parse_rustscan () {
   local input_file="$RAW_OUTPUT_FILE"   # Assign the input file path
-  local output_dir="$APP_DB_PATH"   # Assign the output directory path
+  local output_dir="$APP_DB_PATH"
+  local tmp_output_dir="$TMP_DB_PATH"
 
-  # Check if the input file exists
+  # Check if the input file does not exist
   if [ ! -f "$input_file" ]; then
     log_message "File $input_file not found!"
     exit 1   # Exit the function with error status
@@ -56,6 +59,7 @@ function parse_rustscan () {
 
   # Create the output directory if it doesn't exist
   mkdir -p "$output_dir"
+  mkdir -p "$tmp_output_dir"
 
   # Read the input file line by line
   while IFS= read -r line; do
@@ -71,47 +75,42 @@ function parse_rustscan () {
     sorted_ports=($(echo "${port_array[@]}" | tr ' ' '\n' | sort -n | tr '\n' ' '))
 
     # Create a string with port ranges in HTML code format
-    local telegram_ports=""
-    local start_port=${sorted_ports[0]}
-    local end_port=${sorted_ports[0]}
-
-    # Sort ports in ranges
-    for ((i = 1; i < ${#sorted_ports[@]}; i++)); do
-      if ((sorted_ports[i] == end_port + 1)); then
-        end_port=${sorted_ports[i]}
-      else
-        if ((start_port == end_port)); then
-          telegram_ports+=" <code>$start_port</code>,"   # Add single port if range is one port
-        else
-          telegram_ports+=" <code>$start_port-$end_port</code>,"   # Add port range if range is more than one port
-        fi
-        start_port=${sorted_ports[i]}
-        end_port=${sorted_ports[i]}
-      fi
-    done
-
-    # Add the last port range or single port
-    if ((start_port == end_port)); then
-      telegram_ports+=" <code>$start_port</code>"
-    else
-      telegram_ports+=" <code>$start_port-$end_port</code>"
-    fi
-
-    # Remove leading space, if any
-    telegram_ports=$(echo "$telegram_ports" | sed 's/^ //')
-
-    # Add to text file
-    local data
+    local new_ports=""
 
     # Create a file with IP address as the filename in the specified directory
+    local tmp_output_file="${tmp_output_dir}${ip}.txt"
     local output_file="${output_dir}${ip}.txt"
+    local data
     data=$(echo "$ports" | tr ',' '\n')
+#    # Write ports to the file, each on a new line
+#    echo "$data" > "$tmp_output_file"
+    # Check if the input file does not exist
+    if [ ! -f "$output_file" ]; then
+      echo "$data" > "$output_file"
+      # Send information to Telegram
+      log_message "In ${ip} address were found ports: $ports"
+      send_info_to_telegram "$ip" "$ports" "$output_file"
+    else
+      # Sort ports in Telegram
+      for ((i = 1; i < ${#sorted_ports[@]}; i++)); do
+        local port=${sorted_ports[i]}
+        if ! grep -qw "$port" "$output_file"; then
+          # Add new ports in file
+          echo "$port" >> "$output_file"
+          # Add new ports in new file
+          echo "$port" >> "$tmp_output_file"
+          new_ports+="$port,"
+        fi
+      done
+        log_message "In ${ip} address were found ports: $new_ports"
+        # If variable has new_ports then send it
+        if [ -n "$new_ports" ]; then
+          send_info_to_telegram "$ip" "$new_ports" "$tmp_output_file"
+        fi
 
-    # Write ports to the file, each on a new line
-    echo "$data" > "$output_file"
-
-    # Send information to Telegram
-    send_info_to_telegram "$ip" "$telegram_ports" "$output_file"
+        # Delete data after cycle
+        echo "" > "$tmp_output_file"
+    fi
   done < "$input_file"
 
   # Print completion message and log it
@@ -128,19 +127,50 @@ function send_info_to_telegram () {
   # Convert ports string to an array for easier handling
   IFS=', ' read -r -a port_array <<< "$ports"
 
+  # Sort ports numerically
+  local sorted_ports
+  sorted_ports=($(echo "${port_array[@]}" | tr ' ' '\n' | sort -n | tr '\n' ' '))
+  local telegram_ports=""
+  local start_port=${sorted_ports[0]}
+  local end_port=${sorted_ports[0]}
+
+  # Sort ports in Telegram
+  for ((i = 1; i < ${#sorted_ports[@]}; i++)); do
+    if ((sorted_ports[i] == end_port + 1)); then
+      end_port=${sorted_ports[i]}
+    else
+      if ((start_port == end_port)); then
+        telegram_ports+="<code>$start_port</code>,"   # Add single port if range is one port
+      else
+        telegram_ports+="<code>$start_port-$end_port</code>,"   # Add port range if range is more than one port
+      fi
+      start_port=${sorted_ports[i]}
+      end_port=${sorted_ports[i]}
+    fi
+  done
+
+  # Add the last port range or single port
+  if ((start_port == end_port)); then
+    telegram_ports+=" <code>$start_port</code>"
+  else
+    telegram_ports+=" <code>$start_port-$end_port</code>"
+  fi
+
   # Initialize the first part of the message with IP address
-  local message="<b>IP address: </b>${ip}%0A<b>Opened ports:</b>"
+  local message="<b>New ports were found</b>%0A----------------------%0A<b>IP address: </b>${ip}%0A<b>Opened ports:</b>${telegram_ports}"
 
   # Initialize the current length of the message
   local message_length=${#message}   # Start with the length of message_part1
+  local last_symbol_message
+  last_symbol_message=${message: -1}
 
-  # Build the message content
-  for port in "${port_array[@]}"; do
-    local port_formatted="<code>$port</code>,"   # Format the port with <code> tags
-    message+=" $port_formatted"
-    message_length=$(( message_length + ${#port_formatted} ))
-  done
+  # Check for last symbol
+  if (( last_symbol_message == "," )); then
     message=${message::-1}
+  fi
+
+  log_message "$message"
+
   # Check if the message length exceeds the maximum allowed for Telegram messages
   if (( message_length > max_length )); then
     send_file_to_telegram "$ip" "$input_file"
@@ -171,7 +201,7 @@ function send_message_to_telegram () {
 function send_file_to_telegram () {
   local ip="$1"
   local input_file="$2"   # Message parameter
-  local message="<b>IP address: </b>${ip}%0A<b>Opened ports</b>: Too many ports for Telegram message. All ports are in the file below."
+  local message="<b>New ports were found</b>%0A----------------------%0A<b>IP address: </b>${ip}%0A<b>Opened ports</b>: Too many ports for Telegram message. All ports are in the file below."
   local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN"   # Telegram API URL
   local time="600"   # Maximum timeout for curl request
   local message_status_code
@@ -194,7 +224,6 @@ function send_file_to_telegram () {
       fi
     fi
 
-    printf "%s" "$file_status_sent"
     if ! $file_status_sent; then
       # Send file with ports
       file_status_code=$(curl -L --silent --output "$TMP_LOG_FILE" --max-time "$time" --write-out '%{http_code}' -F document=@"$input_file" "$url/sendDocument?chat_id=$TELEGRAM_CHAT_ID")
@@ -208,10 +237,8 @@ function send_file_to_telegram () {
   done
 }
 
-
 # "Main"
 # Use functions
-get_date
 rustscan
 
 # If file is empty
