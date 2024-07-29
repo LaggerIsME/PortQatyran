@@ -22,10 +22,10 @@ function rustscan () {
 
   # If Port Range and Ports is empty
   if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Ports is set
   elif [ -n "$PORTS" ]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # Else if Port Range is set
   else
     local port_range="--range $PORT_RANGE"
@@ -33,7 +33,7 @@ function rustscan () {
     if [[ -n "$EXCLUDE_PORTS" ]]; then
       port_range="$port_range --exclude-ports $EXCLUDE_PORTS"
     fi
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   fi
 
   # If file is empty
@@ -140,9 +140,9 @@ function send_info_to_telegram () {
       end_port=${sorted_ports[i]}
     else
       if ((start_port == end_port)); then
-        telegram_ports+="<code>$start_port</code>,"   # Add single port if range is one port
+        telegram_ports+=" <code>$start_port</code>,"   # Add single port if range is one port
       else
-        telegram_ports+="<code>$start_port-$end_port</code>,"   # Add port range if range is more than one port
+        telegram_ports+=" <code>$start_port-$end_port</code>,"   # Add port range if range is more than one port
       fi
       start_port=${sorted_ports[i]}
       end_port=${sorted_ports[i]}

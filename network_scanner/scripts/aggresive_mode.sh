@@ -19,10 +19,10 @@ function rustscan () {
 
   # If Port Range and Ports is empty
   if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Ports is set
   elif [ -n "$PORTS" ]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # Else if Port Range is set
   else
     local port_range="--range $PORT_RANGE"
@@ -30,7 +30,7 @@ function rustscan () {
     if [[ -n "$EXCLUDE_PORTS" ]]; then
       port_range="$port_range --exclude-ports $EXCLUDE_PORTS"
     fi
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   fi
 
   # If file is empty
