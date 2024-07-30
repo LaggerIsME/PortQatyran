@@ -12,8 +12,10 @@ function get_ports() {
     exit 1
   fi
 
+  if $TOP_PORTS; then
+    ports="the most popular ports"
   # If Port Range and Ports is empty
-  if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+  elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
     ports="0-65535"
   # If Ports is set
   else
@@ -50,7 +52,7 @@ function print_logo () {
   echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Batch size: ${clear}${white}$BATCH_SIZE${black}"
   echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒${white}░${blue}▒▒▒▒${white}░${blue}▒▒▒▒▒${white}░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Scanned ports: ${clear}${white}${ports}${black}"
   echo -e "░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Excluded ports: ${clear}${white}$EXCLUDE_PORTS${black}"
-  echo -e "░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░"
+  echo -e "░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Number of tries: ${clear}${white}$TRIES${black}"
   echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░░"
   echo -e "░░░░░${blue}▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒${black}░░░░░"
   echo -e "░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░░"

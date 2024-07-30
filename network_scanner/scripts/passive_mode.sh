@@ -13,15 +13,16 @@ function rustscan () {
 
   # If Port Range and Ports is set
   if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
-    log_message "PORTS AND PORT_RANGE COULD NOT BE SET BOTH"
-    log_message "Scan failed"
-    exit 1
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   fi
 
   log_message "Scan started"
 
+  # If top ports are set
+  if $TOP_PORTS; then
+    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" --top -c /app/.rustscan.toml > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Port Range and Ports is empty
-  if [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+  elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Ports is set
   elif [ -n "$PORTS" ]; then

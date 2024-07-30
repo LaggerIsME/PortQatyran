@@ -8,6 +8,8 @@ WORKDIR /app
 # Copy files from host to container
 COPY ./auto.cronjob /app/auto.cronjob
 COPY ./scripts/ /app/scripts/
+COPY ./.rustscan.toml /app/
+
 
 # Make script executable
 RUN chmod +x ./scripts/*
