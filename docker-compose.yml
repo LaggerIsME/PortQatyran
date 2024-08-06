@@ -4,9 +4,14 @@ services:
   network_scanner:
     build: ./network_scanner/
     container_name: portqatyran
+    volumes:
+      - data:/app/db
     environment:
       - TZ=${DEFAULT_TIMEZONE}
     command: bash -c "/app/scripts/startup.sh"
     env_file:
       - .env
     restart: always
+
+volumes:
+  data:
