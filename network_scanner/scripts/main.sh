@@ -15,7 +15,7 @@ function send_message_to_telegram () {
   do
     # Send message with IP and ports to telegram
     status_code=$(curl --silent --output "$TMP_LOG_FILE" -L --max-time "$time" --write-out '%{http_code}' -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&parse_mode=html&text=$message" "$url")
-    log_message "Sent message to Telegram. Telegram API response: "
+    log_message "\nSent message to Telegram. Telegram API response: "
     # Output in log file
     cat "$TMP_LOG_FILE" >> "$APP_LOG_FILE" 2>&1
     sleep .5   # Delay for stability
