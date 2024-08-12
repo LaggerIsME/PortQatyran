@@ -18,7 +18,7 @@ function rustscan () {
 
   log_message "Scan started"
 
-  # If top ports are set
+  # If top ports are true
   if $TOP_PORTS; then
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" --top -c /app/.rustscan.toml > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Port Range and Ports is empty
@@ -43,7 +43,7 @@ function rustscan () {
     log_message "No ports was found"
   fi
 
-  log_message "Scan completed. \nRaw output written to $RAW_OUTPUT_FILE \nLogs written to $APP_LOG_FILE"
+  log_message "Scan completed. Raw output written to $RAW_OUTPUT_FILE. Logs written to $APP_LOG_FILE"
 }
 
 # Parse rustscan output to needed format
@@ -60,7 +60,8 @@ function parse_rustscan () {
 
   # Create the output directory if it doesn't exist
   mkdir -p "$output_dir"
-  mkdir -p "$tmp_output_dir"
+  mkdir -p "${tmp_output_dir}/telegram/"
+  mkdir -p "${tmp_output_dir}/db/"
 
   # Read the input file line by line
   while IFS= read -r line; do
@@ -79,10 +80,16 @@ function parse_rustscan () {
     local new_ports=""
 
     # Create a file with IP address as the filename in the specified directory
-    local tmp_output_file="${tmp_output_dir}${ip}.txt"
+    local telegram_output_file="${tmp_output_dir}/telegram/${ip}.txt"
+    local tmp_output_file="${tmp_output_dir}/db/${ip}.txt"
     local output_file="${output_dir}${ip}.txt"
     local data
     data=$(echo "$ports" | tr ',' '\n')
+
+    # Clear files before cycle
+    cat /dev/null > "$tmp_output_file"
+    cat /dev/null > "$telegram_output_file"
+
 #    # Write ports to the file, each on a new line
 #    echo "$data" > "$tmp_output_file"
     # Check if the input file does not exist
@@ -95,22 +102,22 @@ function parse_rustscan () {
       # Sort ports in Telegram
       for ((i = 1; i < ${#sorted_ports[@]}; i++)); do
         local port=${sorted_ports[i]}
+        # Add all ports in tmp file for local storage
+        echo "$port" >> "$tmp_output_file"
         if ! grep -qw "$port" "$output_file"; then
-          # Add new ports in file
-          echo "$port" >> "$output_file"
-          # Add new ports in new file
-          echo "$port" >> "$tmp_output_file"
+          # Add new ports in tmp file for telegram message
+          echo "$port" >> "$telegram_output_file"
           new_ports+="$port,"
         fi
       done
         log_message "In ${ip} address were found ports: $new_ports"
         # If variable has new_ports then send it
         if [ -n "$new_ports" ]; then
-          send_info_to_telegram "$ip" "$new_ports" "$tmp_output_file"
+          send_info_to_telegram "$ip" "$new_ports" "$telegram_output_file"
         fi
 
-        # Delete data after cycle
-        echo "" > "$tmp_output_file"
+        # Write new ports in file
+        cat "$tmp_output_file" > "$output_file"
     fi
   done < "$input_file"
 
@@ -162,16 +169,15 @@ function send_info_to_telegram () {
 
   # Initialize the current length of the message
   local message_length=${#message}   # Start with the length of message_part1
-  local last_symbol_message
-  last_symbol_message=${message: -1}
+  local last_symbol_message=${message: -1}
 
   # Check for last symbol
-  if (( last_symbol_message == "," )); then
+  if [ "$last_symbol_message" == "," ]; then
     message=${message::-1}
   fi
 
   # Check if the message length exceeds the maximum allowed for Telegram messages
-  if (( message_length > max_length )); then
+  if ((message_length > max_length)); then
     send_file_to_telegram "$ip" "$input_file"
   else
     # If message length is within limits, send as a regular message
@@ -248,4 +254,4 @@ else
   parse_rustscan
 fi
 
-log_message "Script execution completed"
+log_message "Script execution completed\n"

@@ -17,7 +17,7 @@ function rustscan () {
 
   log_message "Scan started"
 
-  # If top ports are set
+  # If top ports are true
   if $TOP_PORTS; then
     /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" --top -c /app/.rustscan.toml > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Port Range and Ports is empty
@@ -42,7 +42,7 @@ function rustscan () {
   fi
 
   # For script outside executing
-  log_message "Scan completed. \nRaw output written to $RAW_OUTPUT_FILE \nLogs written to $APP_LOG_FILE"
+  log_message "Scan completed. Raw output written to $RAW_OUTPUT_FILE. Logs written to $APP_LOG_FILE"
 }
 
 
@@ -197,7 +197,6 @@ function send_file_to_telegram () {
       fi
     fi
 
-    printf "%s" "$file_status_sent"
     if ! $file_status_sent; then
       # Send file with ports
       file_status_code=$(curl -L --silent --output "$TMP_LOG_FILE" --max-time "$time" --write-out '%{http_code}' -F document=@"$input_file" "$url/sendDocument?chat_id=$TELEGRAM_CHAT_ID")
@@ -214,7 +213,6 @@ function send_file_to_telegram () {
 
 # "Main"
 # Use functions
-get_date
 rustscan
 
 # If file is empty
@@ -225,4 +223,4 @@ else
   parse_rustscan
 fi
 
-log_message "Script execution completed"
+log_message "Script execution completed\n"
