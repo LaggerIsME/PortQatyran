@@ -53,7 +53,7 @@ function print_logo () {
   echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒▒${white}░${blue}▒▒▒▒${white}░${blue}▒▒▒▒▒${white}░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░${tab}${blue}${bold}Scanned ports: ${clear}${white}${ports}${black}"
   echo -e "░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░${blue}▒▒▒${white}░░${blue}▒▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Excluded ports: ${clear}${white}$EXCLUDE_PORTS${black}"
   echo -e "░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒${white}░░░░${blue}▒▒${white}░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Number of tries: ${clear}${white}$TRIES${black}"
-  echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░░${black}░${tab}${blue}${bold}Batch size (Only Rustscan): ${clear}${white}$BATCH_SIZE${black}"
+  echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░░${black}${tab}${blue}${bold}Batch size (Only Rustscan): ${clear}${white}$BATCH_SIZE${black}"
   echo -e "░░░░░${blue}▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒${black}░░░░░${black}${tab}${blue}${bold}Timezone: ${clear}${white}$TZ${black}"
   echo -e "░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░░"
   echo -e "░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░░░░"
