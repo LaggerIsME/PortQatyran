@@ -216,7 +216,6 @@ function run_nmap() {
   local ip_addresses
   # Change rustscan format to nmap
   ip_addresses=$(echo "$PREY_IPS" | sed 's/,/ /g')
-  log_message "$ip_addresses"
   ##########################################################################################################
 
   # If Port Range and Ports is set
