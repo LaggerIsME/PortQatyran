@@ -29,7 +29,7 @@ function get_ports() {
 
 # Send PortQatyran configuration to chat
 function send_configuration_to_telegram () {
-  local message="<b>PortQatyran Configuration</b>%0A----------------------%0A<b>Timezone: </b>$TZ%0A<b>Scan mode: </b>$SCAN_MODE %0A<b>Notifications mode: </b>$NOTIFICATION_MODE %0A<b>Batch size: </b>$BATCH_SIZE %0A<b>Scanned ports: </b>${ports} %0A<b>Excluded ports: $EXCLUDE_PORTS</b>%0A<b>Number of tries:</b> $TRIES"
+  local message="<b>PortQatyran Configuration</b>%0A----------------------%0A<b>Timezone: </b>$TZ%0A<b>Scan mode: </b>$SCAN_MODE %0A<b>Notifications mode: </b>$NOTIFICATION_MODE %0A<b>Batch size: </b>$BATCH_SIZE %0A<b>Scanned ports: </b>${ports} %0A<b>Excluded ports:</b> $EXCLUDE_PORTS%0A<b>Number of tries:</b> $TRIES"
   local url="https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
   local time="600"
   local status_code

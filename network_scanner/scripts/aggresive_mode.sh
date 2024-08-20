@@ -5,8 +5,9 @@ function log_message () {
   printf "\n$(date '+%d %B %Y %T %:z') [%s] - $message" "${TZ}" >> "$APP_LOG_FILE" 2>&1
 }
 
+
 # Start network scan
-function rustscan () {
+function run_rustscan () {
 
   # If Port Range and Ports is set
   if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
@@ -19,13 +20,13 @@ function rustscan () {
 
   # If top ports are true
   if $TOP_PORTS; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" --top -c /app/.rustscan.toml > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$RUSTSCAN_SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" --top -c /app/.rustscan.toml > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Port Range and Ports is empty
   elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$RUSTSCAN_SCAN_MODE" --batch-size "$BATCH_SIZE" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # If Ports is set
   elif [ -n "$PORTS" ]; then
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$RUSTSCAN_SCAN_MODE" --batch-size "$BATCH_SIZE" --ports "$PORTS" --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   # Else if Port Range is set
   else
     local port_range="--range $PORT_RANGE"
@@ -33,21 +34,21 @@ function rustscan () {
     if [[ -n "$EXCLUDE_PORTS" ]]; then
       port_range="$port_range --exclude-ports $EXCLUDE_PORTS"
     fi
-    /usr/bin/rustscan --greppable --accessible --scan-order "$SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+    /usr/bin/rustscan --greppable --accessible --scan-order "$RUSTSCAN_SCAN_MODE" --batch-size "$BATCH_SIZE" $port_range --addresses "$PREY_IPS" --tries "$TRIES" > "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
   fi
 
   # If file is empty
   if [ ! -s "$RAW_OUTPUT_FILE" ]; then
+    # For script outside executing
     log_message "No ports was found"
   fi
 
-  # For script outside executing
   log_message "Scan completed. Raw output written to $RAW_OUTPUT_FILE. Logs written to $APP_LOG_FILE"
 }
 
 
 # Parse rustscan output to needed format
-function parse_rustscan () {
+function parse_output () {
   local input_file="$RAW_OUTPUT_FILE"   # Assign the input file path
   local output_dir="$APP_DB_PATH"   # Assign the output directory path
 
@@ -210,17 +211,74 @@ function send_file_to_telegram () {
   done
 }
 
+# NMAP test
+function run_nmap() {
+  local ip_addresses
+  # Change rustscan format to nmap
+  ip_addresses=$(echo "$PREY_IPS" | sed 's/,/ /g')
+  log_message "$ip_addresses"
+  ##########################################################################################################
+
+  # If Port Range and Ports is set
+  if [[ -n "$PORTS" && -n "$PORT_RANGE" ]]; then
+    log_message "PORTS AND PORT_RANGE COULD NOT BE SET BOTH"
+    log_message "Scan failed"
+    exit 1
+  fi
+
+  log_message "Scan started"
+
+  # If top ports are true
+  if $TOP_PORTS; then
+    /usr/bin/nmap -Pn --open $ip_addresses -T${NMAP_SCAN_MODE} --max-retries $TRIES -oG "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+  # If Port Range and Ports is empty
+  elif [[ -z "$PORTS" && -z "$PORT_RANGE" ]]; then
+    /usr/bin/nmap -Pn --open $ip_addresses -T${NMAP_SCAN_MODE} --max-retries $TRIES -p 0-65535 -oG "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+  # If Ports is set
+  elif [ -n "$PORTS" ]; then
+    /usr/bin/nmap -Pn --open $ip_addresses -T${NMAP_SCAN_MODE} --max-retries $TRIES -p $PORTS -oG "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+  # Else if Port Range is set
+  else
+    local port_range="-p $PORT_RANGE"
+    # If Exclude Ports is set
+    if [[ -n "$EXCLUDE_PORTS" ]]; then
+      port_range="$port_range --exclude-ports $EXCLUDE_PORTS"
+    fi
+    /usr/bin/nmap -Pn --open $ip_addresses -T${NMAP_SCAN_MODE} --max-retries $TRIES ${port_range} -oG "$RAW_OUTPUT_FILE" 2>> "$APP_LOG_FILE"
+  fi
+
+  # If file is empty
+  if [ ! -s "$RAW_OUTPUT_FILE" ]; then
+    # For script outside executing
+    log_message "No ports was found"
+  fi
+
+  log_message "Scan completed. Raw output written to $RAW_OUTPUT_FILE. Logs written to $APP_LOG_FILE"
+}
+
+function nmap_output_to_rustscan_format() {
+  local filtered_output
+  filtered_output=$(grep -v -E "^#|Status: Up" "$RAW_OUTPUT_FILE" | cut -d' ' -f2,4- | awk '{printf "%s -> [", $1; $1=""; for(i=2; i<=NF; i++) { a=a""$i; }; split(a,s,","); for(e in s) { split(s[e],v,"/"); printf "%s,", v[1]}; a=""; printf "]\n" }' | sed -n -e 's/,]/]/p')
+  echo "$filtered_output" > "$RAW_OUTPUT_FILE"
+}
 
 # "Main"
 # Use functions
-rustscan
+
+# Check used scanner
+if [ "$SCAN_MODE" == "old_school" ]; then
+  run_nmap
+  nmap_output_to_rustscan_format
+elif [ "$SCAN_MODE" == "modern" ]; then
+  run_rustscan
+fi
 
 # If file is empty
 if [ ! -s "$RAW_OUTPUT_FILE" ]; then
-  # Do not run parse_rustscan
+  # Do not run parse_output
   exit 1
 else
-  parse_rustscan
+  parse_output
 fi
 
 log_message "Script execution completed\n"
