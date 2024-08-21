@@ -23,7 +23,7 @@ function send_message_to_telegram () {
 }
 
 # Main
-send_message_to_telegram "<b>NEW SCAN STARTED</b>%0A----------------------%0A"
+send_message_to_telegram "<b>I am hungry. Starting a new scan</b>%0A----------------------%0A"
 
 # Check notification mode
 if [ "$NOTIFICATION_MODE" = "aggresive" ]; then

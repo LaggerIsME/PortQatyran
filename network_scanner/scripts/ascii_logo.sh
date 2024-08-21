@@ -39,7 +39,7 @@ function print_logo () {
   echo -e "░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░░░░░${tab}${blue}${bold}Description: ${clear}${white}Automated network scanner for hunting IPs and port changes${black}"
   echo -e "░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░░░${tab}${blue}${bold}Github: ${clear}${white}PortQatyran (https://github.com/LaggerIsME/PortQatyran)${black}"
   echo -e "░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░░${tab}${blue}${bold}Tools: ${clear}${white}Bash, Cron, Curl, Nmap, Rustscan, Debian 12, Docker, Docker Compose${black}"
-  echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░${tab}${blue}${bold}Based on: ${clear}${white}Rustscan (https://github.com/RustScan/RustScan)${black}"
+  echo -e "░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${white}░░░░░░░░░░░░░░░░░${blue}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${black}░░░░${tab}${blue}${bold}Based on: ${clear}${white}Rustscan and Nmap${black}"
   echo -e "░░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}▓▓██${white}░░░░░░░░░░░░░░░░░░░${blue}${black}██▓▓${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░░${tab}${blue}${bold}Tool creator: ${clear}${white}LaggerIsME (https://github.com/LaggerIsME)${black}"
   echo -e "░░${blue}▒▒▒▒▒▒▒▒▒▒▒${black}▓████${white}░░░░░░░░░░░░░░░░░░░${blue}${black}████▓${blue}▒▒▒▒▒▒▒▒▒▒▒${black}░░${tab}${blue}${bold}Logo designer: ${clear}${white}NoyanTM (https://github.com/NoyanTM)${black}"
   echo -e "░${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}▓█▓▒${white}░░░░░░░░░░░░░░░░░░░░░${blue}${black}▒▓█▓${blue}▒▒▒▒▒▒▒▒▒▒▒▒${black}░"
