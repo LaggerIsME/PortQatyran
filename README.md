@@ -18,35 +18,41 @@
 
 
 ## What is this?
-PortQatyran is an automated network scanner designed to hunt for IP and port changes. Based on the [rustscan scanner](https://github.com/RustScan/RustScan), it efficiently scans networks for open ports, logs executed commands, and sends notifications in chat via Telegram about the scan results. The tool is highly configurable, allowing users to set scanning frequencies and manually initiate scans.
+PortQatyran is an automated network scanner designed to hunt for IP and port changes. Based on the [rustscan scanner](https://github.com/RustScan/RustScan) and [nmap scanner](https://github.com/nmap/nmap), it efficiently scans networks for open ports, logs executed commands, and sends notifications in chat via Telegram about the scan results. The tool is highly configurable, allowing users to set scanning frequencies and manually initiate scans.
 
 ## Why "PortQatyran"?
 The name "PortQatyran" is inspired by the Kazakh word for shark "qatyran" symbolizing its efficiency and speed in detecting network changes. The logo represents an RJ-45 connector with a shark face, which is usually used to connect equipment ports.
 
 ## Features
 * **Fast Network Scanning**: Quickly scans networks for open port IP addresses
-* **Scheduling**: Set the scanning frequency using cron jobs
+* **Scheduling**: Set the scanning frequency using `cron` jobs
 * **Sandboxed Application**: Runs in a secure, isolated environment
 * **Logging**: Logs all executed commands for auditing.
 * **Easy Setup**: Simple configuration via environment files.
-* **Configuration Display**: Shows tool configuration with the qatyranfetch command.
-* **Manual Scanning**: Initiate scans manually using the portqatyran command.
+* **Configuration Display**: Shows tool configuration with the `qatyranfetch` command.
+* **Manual Scanning**: Initiate scans manually using the `portqatyran` command.
 * **Telegram Notifications**: Sends scan results via Telegram.
-* **Notification Modes**: Supports aggresive and passive notification modes.
+* **Notification Modes**: Supports `aggresive` and `passive` notification modes.
+* **Scan Modes**: Supports `nmap` and `rustscan` as scanners.
+
 
 ## Tools and libraries
 * Bash
 * Rustscan
+* Nmap
 * Cron
 * Curl
-* Nmap
 * Debian 12
 * Docker
 * Docker Compose
 
-## Modes
+## Notification Modes
 * **Aggresive**: Sends all ip addresses and ports after each scan
 * **Passive**: Sends only ip addresses and ports that have not been found before
+
+## Scan Modes
+* **Old_school (Nmap)**: It does a longer but accurate scan of open ports.
+* **Modern (Rustscan)**: It performs scan faster, but can sometimes show filtered ports as open ports.
 
 ## Usage
 * Clone the repository: 
@@ -67,36 +73,52 @@ cp example.env .env
 ```
 * Configure variables in `.env` file:
 ```bash
-# Timezone settings
-DEFAULT_TIMEZONE="Asia/Almaty"
-
-# Rustscan settings
-# Could be "random" or "serial"
-SCAN_MODE="serial"
-# Number of ports to scan at once
-BATCH_SIZE=1000
+# Scan settings
+# Number of tries
+TRIES=3
 # IP Addreses for scan. Write without spaces.
 PREY_IPS="127.0.0.1,192.168.124.200"
-# Set Only Ports or Port Range
+
+# SET ONLY (PORTS) OR (PORT_RANGE + EXCLUDE_PORTS) OR (TOP_PORTS). Other variables should be commented.
+
 # Ports. Write without spaces
 #PORTS="80,443,5432"
 # Port range
-PORT_RANGE="0-65535"
+#PORT_RANGE="1000-1500"
+# Top ports. Could be true or false
+TOP_PORTS="true"
 # Exlude ports. Write without spaces.
 EXCLUDE_PORTS=""
 
 # PortQatyran settings.
-# Could be "aggresive". In future will be "passive"
+# Timezone
+DEFAULT_TIMEZONE="Asia/Almaty"
+
+# Choose scanner for scanning. Could be "old_school" or "modern". Modern mode uses Rustscan, Old_school mode is using Nmap
+SCAN_MODE="old_school"
+
+# Telegram notifications
+# Could be "aggresive" or "passive"
 NOTIFICATION_MODE="passive"
 TELEGRAM_BOT_TOKEN=""
 TELEGRAM_CHAT_ID=""
 
 # Directory path
-RAW_OUTPUT_FILE="/tmp/output.txt"
+RAW_OUTPUT_FILE="/app/output.txt"
 APP_LOG_FILE="/var/log/portqatyran.log"
 APP_DB_PATH="/app/db/"
 TMP_LOG_FILE="/tmp/portqatyran.log"
-TMP_DB_PATH="/tmp/db/"
+TMP_DB_PATH="/tmp"
+
+# Rustscan settings
+# Could be "random" or "serial"
+RUSTSCAN_SCAN_MODE="serial"
+# Number of ports to scan at once
+BATCH_SIZE=10000
+
+# Nmap settings
+NMAP_SCAN_MODE=3
+
 ```
 * Move to the `~/PortQatyran/network_scanner/` directory: 
 ```bash 
@@ -115,7 +137,7 @@ cd ~/PortQatyran
 ```bash
 docker compose up -d --build
 ```
-After all these actions, the bot will send a message with the PortQatyran configuration to the chat you specified
+After all these actions, the bot will send a message with the PortQatyran configuration to the chat you specified.
 
 ## Commands
 * Show PortQatyran configuration:
@@ -128,7 +150,6 @@ docker exec portqatyran qatyranfetch
 ```bash
 docker exec portqatyran portqatyran
 ```
-![portqatyran](https://github.com/user-attachments/assets/6ec6fbc9-608b-45db-a667-dc17f2ae4df2)
 
 
 ## About us
