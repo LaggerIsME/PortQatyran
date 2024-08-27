@@ -139,6 +139,9 @@ docker compose up -d --build
 ```
 After all these actions, the bot will send a message with the PortQatyran configuration to the chat you specified.
 
+## Database
+Information about **opened ports** you can find in `/app/db` directory inside of **Docker container**.
+
 ## Commands
 * Show PortQatyran configuration:
 ```bash
